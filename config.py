@@ -11,3 +11,5 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 GRAY = (150, 150, 150)
 DARK_GRAY = (75, 75, 75)
+
+FONT = 'malgungothic'

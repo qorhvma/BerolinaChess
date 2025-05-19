@@ -1,4 +1,5 @@
 from KoreanTextSize2Rect import *
+from testEventWheel import *
 import pygame
 import sys
 
@@ -25,11 +26,17 @@ text = pygame.font.SysFont('nanumgothic', size=x).render('안'*y, 1, BLACK)
 
 running = True
 
+x = WheelTestObject()
+
+from pygame.locals import *
+print()
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        x.event(event)
 
     SCREEN.fill(WHITE)
     pygame.draw.rect(SCREEN, GREEN, (0, 0, rect_size[0], rect_size[1]))
