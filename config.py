@@ -13,3 +13,7 @@ GRAY = (150, 150, 150)
 DARK_GRAY = (75, 75, 75)
 
 FONT = 'malgungothic'
+
+# 스크롤 바
+SCROLL_BAR_X = 'x'
+SCROLL_BAR_Y = 'y'

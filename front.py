@@ -1,7 +1,7 @@
 from typing import Callable
-from config import *
 import pygame
-
+from config import *
+from scroll import *
 
 def binary_search(front : int, back : int, target : int, func : Callable[[int], int]) -> int :
     while front < back:
@@ -30,41 +30,6 @@ def calculate_korean_font_size(size):
         lambda S : pygame.font.SysFont(FONT, size=height_val).render('가' * S, 1, BLACK).get_width()
     )
     return (height_val, width_val - 1)    # (폰트 크기, 글자 횟수)
-
-
-class Object:
-    def __init__(self, rect=None, surface=None, sub_objects=[]):
-        self.rect = rect
-        self.surface = surface
-        self.sub_objects = sub_objects
-
-    def show(self, surface):
-        for obj in self.sub_objects:
-            obj.show(self.surface)
-        surface.blit(self.surface, self.rect)
-    
-    def event(self, event):
-        for obj in self.sub_objects:
-            obj.event(event)
-
-    @property
-    def surface(self):
-        return self._surface
-    
-    @surface.setter
-    def surface(self, val):
-        if val:
-            self._surface = val
-        if self.rect:
-            pygame.Surface(self.rect.size)
-
-
-class Button(Object):
-    def is_on_me(self):
-        mouse_pos = pygame.mouse.get_pos()
-        if self.surface.rect.collidepoint(mouse_pos):
-            return True
-        return False
 
 
 class Tab(Button):
@@ -104,30 +69,8 @@ class TabManager:
             surface.blit(tab.textObj, tab.rect)
 
     def event(self, event):
-        for i, tab in enumerate(self.tabs):
-            if tab.is_on_me():
-                self.chosen = i
-
-
-class Scroll(Object):
-    def __init__(self, sub_obj, start_pos=[0, 0], *args, **kargs):
-        super().__init__(*args, **kargs)
-        self.sub_obj = sub_obj
-        self.show_pos = start_pos
-        self.click_pos = [0, 0]
-    
-    def event(self, event):
-        if event.type == pygame.MOUSEWHEEL:
-            self.show_pos[0] += event.x
-            self.show_pos[1] += event.y
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            self.click_on = pygame.mouse.get_pos()
-            self.sub_obj.event(event)
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if self.click_on == pygame.mouse.get_pos():
-                self.sub_obj.event(event)
-        
-    def show(self, surface):
-        self.sub_obj.rect.topleft= self.show_pos
-        self.sub_obj.show(self.surface)
-        super().show(surface)
+        if event.type == pygame.MOUSEBUTTONUP:
+            mouse_pos = pygame.mouse.get_pos()
+            for i, tab in enumerate(self.tabs):
+                if tab.is_on_me():
+                    self.chosen = i

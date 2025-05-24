@@ -5,6 +5,7 @@ root = tk.Tk()
 root.withdraw()
 
 
+# ㅘㅏㅏㅏ
 file_path = filedialog.askopenfilename(
         title="파일을 선택하세요",
         filetypes=[("모든 파일", "*.png, *.jpg")]
