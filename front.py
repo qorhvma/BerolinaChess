@@ -34,45 +34,43 @@ def calculate_korean_font_size(size):
 
 class Tab(Button):
     def __init__(self, text, size, page):
-        super().__init__(pygame.rect.Rect(0, 0, 1, 1))
         self.text = text
         self.font = pygame.font.SysFont(FONT, size=calculate_korean_font_size(size)[0])
         self.textObj = self.font.render(self.text, 1, BLACK)
-        self.rect = self.textObj.get_rect()
-        self.rect.size = size
+        text_obj_rect = self.textObj.get_rect()
+        super().__init__(text_obj_rect.x, text_obj_rect.y, size[0], size[1])
         self.page = page
 
         self.chosen_color = DARK_GRAY
         self.default_color = GRAY
 
-        self.surface = pygame.surface.Surface(self.rect.size)
+        self.surface = pygame.surface.Surface(self.size)
         self.change_color(False)
 
     def change_color(self, chosen):
         if (chosen):
-            pygame.draw.rect(self.surface, self.chosen_color, (0, 0, self.rect.width, self.rect.height))
+            pygame.draw.rect(self.surface, self.chosen_color, (0, 0, self.width, self.height))
         else:
-            pygame.draw.rect(self.surface, self.default_color, (0, 0, self.rect.width, self.rect.height))
-        self.surface.blit(self.textObj, (0, 0, self.rect.width, self.rect.height))
+            pygame.draw.rect(self.surface, self.default_color, (0, 0, self.width, self.height))
+        self.surface.blit(self.textObj, (0, 0, self.width, self.height))
 
 
 class TabManager(Object):
-    def __init__(self, rect, tab_size=None, tab_color=None):
-        super().__init__(rect)
-        self.rect = rect
-        self.next_tab_pos = list(rect.topleft)
+    def __init__(self, left, top, width, height, tab_size=None, tab_color=None):
+        super().__init__(left, top, width, height)
+        self.next_tab_pos: list = list(self.topleft)
         self.tabs : list[Tab] = []
         self.chosen = 0
-        self.tab_size = (rect.width // 5, rect.height // 10) if not tab_size else tab_size
+        self.tab_size = (self.width // 5, self.height // 10) if not tab_size else tab_size
         self.tab_color = GRAY if not tab_color else tab_color
 
-    def create_tab(self, title, page=Object(pygame.rect.Rect(0, 0, 100, 100))): 
+    def create_tab(self, title, page=Object(0, 0, 100, 100)): 
         self.tabs.append(Tab(title, self.tab_size, page))
         #================
-        self.insert_sub_objects(page)
+        self.sub_objects.append(page)
         #================
-        self.tabs[-1].rect.topleft = self.next_tab_pos
-        self.tabs[-1].page.rect.topleft = (0, 0 + self.tab_size[1])
+        self.tabs[-1].topleft = tuple(self.next_tab_pos)
+        self.tabs[-1].page.topleft = (0, 0 + self.tab_size[1])
         intervel = 2
         self.next_tab_pos[0] += self.tab_size[0] + intervel
 
