@@ -8,7 +8,7 @@ class ScrollBarPointer(Object):
         super().__init__(rect)
         self.scroll_size = scroll_size
         self.type = type
-    
+
     def change_pos(self, distance_per):
         if self.type == SCROLL_BAR_X:
             tmp_size = self.rect.width
@@ -23,7 +23,7 @@ class ScrollBarPointer(Object):
             self.rect.left = tmp_pos
         else:
             self.rect.top = tmp_pos
-    
+
     def show(self, surface):
         self.surface.fill(DARK_GRAY)
         super().show(surface)
@@ -42,13 +42,13 @@ class ScrollBar(Button):
         
         self.pointer = ScrollBarPointer(SCROLL_BAR_POINTER_RECT, SCROLL_SIZE, type)
         self.tracking = 0
-        self.sub_objects.append(self.pointer)
+        self.insert_sub_objects(self.pointer)
         self.mother = scroll
         self.clicking = False
-    
+
     def change_pos(self, distance_per):
         self.pointer.change_pos(distance_per)
-        
+
     def event(self, event):
         if not self.is_on_me(): return None
         print('hellwodfdskfj')
@@ -59,24 +59,24 @@ class ScrollBar(Button):
         if self.clicking:
             if self.type == SCROLL_BAR_X:
                 self.tracking = pygame.mouse.get_pos()[0]
-                relative_pos = self.tracking-self.rect.right
-        
+                relative_pos = self.tracking
+
                 if relative_pos < self.pointer.rect.width/2:
                     relative_pos = self.pointer.rect.width/2
-                if relative_pos > self.rect.height-self.pointer.rect.width/2:
-                    relative_pos = self.rect.height-self.pointer.rect.width/2
+                if relative_pos > self.rect.width-self.pointer.rect.width/2:
+                    relative_pos = self.rect.width-self.pointer.rect.width/2
                 tmp_val = (relative_pos-self.pointer.rect.width/2)/(self.rect.width-self.pointer.rect.width)
                 self.mother.change_pos(tmp_val, SCROLL_BAR_X)
-                    
+
             else:
                 self.tracking = pygame.mouse.get_pos()[1]
                 relative_pos = self.tracking-self.rect.top
-        
+
                 if relative_pos < self.pointer.rect.height/2:
                     relative_pos = self.pointer.rect.height/2
                 if relative_pos > self.rect.height-self.pointer.rect.height/2:
                     relative_pos = self.rect.height-self.pointer.rect.height/2
-                #print(relative_pos, self.rect.height, self.pointer.rect.height)
+                # print(relative_pos, self.rect.height, self.pointer.rect.height)
                 tmp_val = (relative_pos-self.pointer.rect.height/2)/(self.rect.height-self.pointer.rect.height)
                 self.mother.change_pos(tmp_val, SCROLL_BAR_Y)
 
@@ -84,8 +84,9 @@ class ScrollBar(Button):
         self.surface.fill(GRAY)
         super().show(surface)
 
+
 class Scroll(Object):
-    def __init__(self, sub_obj, start_pos=[0, 0], rect=None, surface=None, sub_objects=[]):
+    def __init__(self, sub_obj: Object, start_pos=[0, 0], rect=None, surface=None, sub_objects=[]):
         super().__init__(rect, surface, sub_objects)
         self.sub_obj = sub_obj
         self.show_pos = start_pos
@@ -94,22 +95,22 @@ class Scroll(Object):
         self.end_show_pos = [-self.sub_obj.rect.size[i]+self.rect.size[i] for i in range(2)]
         SCROLL_BAR_INTERVAL = 3
         SCROLL_BAR_HEIGHT = 10
-        print(self.rect.bottom-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT)
+        # print(self.rect.bottom-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT)
         SCROLL_BAR_RECTX = pygame.rect.Rect(
             self.rect.left+SCROLL_BAR_INTERVAL, self.rect.bottom-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT,
             self.rect.width-SCROLL_BAR_INTERVAL*2-SCROLL_BAR_HEIGHT, SCROLL_BAR_HEIGHT
-            )
+        )
         self.scrollx = ScrollBar(rect=SCROLL_BAR_RECTX, sub_obj_size=self.sub_obj.rect.width, show_obj_size=self.rect.width, type=SCROLL_BAR_X, scroll=self)
         SCROLL_BAR_RECTY = pygame.rect.Rect(
             self.rect.right-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT, self.rect.top+SCROLL_BAR_INTERVAL,
             SCROLL_BAR_HEIGHT, self.rect.height-SCROLL_BAR_INTERVAL*2-SCROLL_BAR_HEIGHT
-            )
-        print(SCROLL_BAR_RECTX, SCROLL_BAR_RECTY)
+        )
+        # print(SCROLL_BAR_RECTX, SCROLL_BAR_RECTY)
         self.scrolly = ScrollBar(rect=SCROLL_BAR_RECTY, sub_obj_size=self.sub_obj.rect.height, show_obj_size=self.rect.height, type=SCROLL_BAR_Y, scroll=self)
 
-        self.sub_objects.append(self.scrollx)
-        self.sub_objects.append(self.scrolly)
-    
+        self.insert_sub_objects(self.scrollx)
+        self.insert_sub_objects(self.scrolly)
+
     def change_pos(self, distance_per, xy):
         if xy == SCROLL_BAR_X:
             self.show_pos[0] = -(self.sub_obj.rect.width - self.rect.width)*distance_per
@@ -118,8 +119,8 @@ class Scroll(Object):
 
     def event(self, event):
         if event.type == pygame.MOUSEWHEEL:
-            self.wheel_acc[0] -= event.x*30
-            self.wheel_acc[1] += event.y*30
+            self.wheel_acc[0] -= event.x * SCROLL_SPEED_X
+            self.wheel_acc[1] += event.y * SCROLL_SPEED_Y
         elif event.type == pygame.MOUSEBUTTONDOWN:
             self.click_on = pygame.mouse.get_pos()
             self.sub_obj.event(event)
@@ -127,15 +128,14 @@ class Scroll(Object):
             if self.click_on == pygame.mouse.get_pos():
                 self.sub_obj.event(event)
         super().event(event)
-        
-        
+
     def show(self, surface):
         self.surface.fill(WHITE)
         self.sub_obj.rect.topleft = self.show_pos
         self.sub_obj.show(self.surface)
         self.scrollx.change_pos(-1*self.show_pos[0]/(self.sub_obj.rect.width-self.rect.width))
         self.scrolly.change_pos(-1*self.show_pos[1]/(self.sub_obj.rect.height-self.rect.height))
-        
+
         pygame.draw.rect(self.surface, RED, pygame.rect.Rect(3, 757, 1184, 10), width=1, border_radius=1)
         super().show(surface)
 

@@ -2,6 +2,7 @@
 HEIGHT = 800
 WIDTH = 1200
 PROGRAM_NAME = '변형 체스 생성 툴'
+DEBUG = True
 
 #색깔
 WHITE = (255, 255, 255)
@@ -17,3 +18,5 @@ FONT = 'malgungothic'
 # 스크롤 바
 SCROLL_BAR_X = 'x'
 SCROLL_BAR_Y = 'y'
+SCROLL_SPEED_X = 1000
+SCROLL_SPEED_Y = 100

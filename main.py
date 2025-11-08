@@ -27,8 +27,7 @@ class PieceGenScreen(Object):
         self.itval = 10
         self.button_size = (30, 30)
         self.button_pos = [10, 0]
-        #self.piece_buttons = []
-        
+
     def create_button(self):
         file_path = filedialog.askopenfilename(
                 title="파일을 선택하세요",
@@ -52,18 +51,19 @@ class main:
         #객체 초기화
         tab_size = (100, 30)
         self.main_tab = TabManager(pygame.rect.Rect(0, 0, WIDTH, HEIGHT), tab_size)
-        self.piece_gen_screen = PieceGenScreen( 
-            pygame.rect.Rect(0, 0, WIDTH*3, (HEIGHT-tab_size[1])*3),
-            pygame.transform.scale(pygame.image.load('dumpImage.png'), (WIDTH*3, (HEIGHT-tab_size[1])*3))
-            )
+        self.piece_gen_screen = PieceGenScreen(
+            pygame.rect.Rect(0, 0, WIDTH * 3, (HEIGHT - tab_size[1]) * 3),
+            pygame.transform.scale(pygame.image.load('dumpImage.png'), (WIDTH * 3, (HEIGHT - tab_size[1]) * 3))
+        )
         self.scroll_piece_gen_screen = Scroll(
-            self.piece_gen_screen, 
-            rect=pygame.rect.Rect(0, 0, WIDTH, HEIGHT-tab_size[1])
-            )
+            self.piece_gen_screen,
+            rect=pygame.rect.Rect(0, 0, WIDTH, HEIGHT - tab_size[1])
+        )
         self.main_tab.create_tab('기물 생성', self.scroll_piece_gen_screen)
+        print(self.scroll_piece_gen_screen.asb_pos)
         self.main_tab.create_tab('지형 생성')
         self.main_tab.create_tab(
-            '기물 배열', 
+            '기물 배열',
             Object(pygame.rect.Rect(0, 0, 100, 100), pygame.image.load('dumpImage.png'))
             )
 

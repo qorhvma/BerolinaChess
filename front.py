@@ -34,6 +34,7 @@ def calculate_korean_font_size(size):
 
 class Tab(Button):
     def __init__(self, text, size, page):
+        super().__init__(pygame.rect.Rect(0, 0, 1, 1))
         self.text = text
         self.font = pygame.font.SysFont(FONT, size=calculate_korean_font_size(size)[0])
         self.textObj = self.font.render(self.text, 1, BLACK)
@@ -41,18 +42,35 @@ class Tab(Button):
         self.rect.size = size
         self.page = page
 
+        self.chosen_color = DARK_GRAY
+        self.default_color = GRAY
 
-class TabManager:
+        self.surface = pygame.surface.Surface(self.rect.size)
+        self.change_color(False)
+
+    def change_color(self, chosen):
+        if (chosen):
+            pygame.draw.rect(self.surface, self.chosen_color, (0, 0, self.rect.width, self.rect.height))
+        else:
+            pygame.draw.rect(self.surface, self.default_color, (0, 0, self.rect.width, self.rect.height))
+        self.surface.blit(self.textObj, (0, 0, self.rect.width, self.rect.height))
+
+
+class TabManager(Object):
     def __init__(self, rect, tab_size=None, tab_color=None):
+        super().__init__(rect)
         self.rect = rect
         self.next_tab_pos = list(rect.topleft)
-        self.tabs = []
+        self.tabs : list[Tab] = []
         self.chosen = 0
         self.tab_size = (rect.width // 5, rect.height // 10) if not tab_size else tab_size
         self.tab_color = GRAY if not tab_color else tab_color
 
-    def create_tab(self, title, page=Object(pygame.rect.Rect(0, 0, 100, 100))):
+    def create_tab(self, title, page=Object(pygame.rect.Rect(0, 0, 100, 100))): 
         self.tabs.append(Tab(title, self.tab_size, page))
+        #================
+        self.insert_sub_objects(page)
+        #================
         self.tabs[-1].rect.topleft = self.next_tab_pos
         self.tabs[-1].page.rect.topleft = (0, 0 + self.tab_size[1])
         intervel = 2
@@ -60,17 +78,13 @@ class TabManager:
 
     def show(self, surface):
         for i, tab in enumerate(self.tabs):
-            if i == self.chosen:
-                pygame.draw.rect(surface, GRAY, tab.rect)
-                x, y = self.rect.topleft
+            tab.change_color(i == self.chosen)
+            tab.show(surface)
+            if (i == self.chosen):
                 tab.page.show(surface)
-            else:
-                pygame.draw.rect(surface, DARK_GRAY, tab.rect)
-            surface.blit(tab.textObj, tab.rect)
 
     def event(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
-            mouse_pos = pygame.mouse.get_pos()
             for i, tab in enumerate(self.tabs):
                 if tab.is_on_me():
                     self.chosen = i
