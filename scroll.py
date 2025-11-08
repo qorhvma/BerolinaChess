@@ -48,7 +48,6 @@ class ScrollBar(Button):
 
     def event(self, event):
         if not self.is_on_me(): return None
-        print('hellwodfdskfj')
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.clicking = True
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -86,6 +85,7 @@ class Scroll(Object):
     def __init__(self, sub_obj: Object, top, left, width, height, start_pos=[0, 0], surface=None, sub_objects=[]):
         super().__init__(top, left, width, height, surface, sub_objects)
         self.sub_obj = sub_obj
+        self.sub_objects.append(sub_obj)
         self.show_pos = start_pos
         self.click_pos = [0, 0]
         self.wheel_acc = [0, 0]
@@ -93,14 +93,26 @@ class Scroll(Object):
         SCROLL_BAR_INTERVAL = 3
         SCROLL_BAR_HEIGHT = 10
         # print(self.rect.bottom-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT)
-        self.scrollx = ScrollBar(self.left+SCROLL_BAR_INTERVAL, self.bottom-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT,
-            self.width-SCROLL_BAR_INTERVAL*2-SCROLL_BAR_HEIGHT, SCROLL_BAR_HEIGHT,
-            sub_obj_size=self.sub_obj.width, show_obj_size=self.width, type=SCROLL_BAR_X, scroll=self
+        self.scrollx = ScrollBar(
+            left=self.left+SCROLL_BAR_INTERVAL,
+            top=self.bottom-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT,
+            width=self.width-SCROLL_BAR_INTERVAL*2-SCROLL_BAR_HEIGHT,
+            height=SCROLL_BAR_HEIGHT,
+            sub_obj_size=self.sub_obj.width,
+            show_obj_size=self.width,
+            type=SCROLL_BAR_X,
+            scroll=self
         )
         # print(SCROLL_BAR_RECTX, SCROLL_BAR_RECTY)
-        self.scrolly = ScrollBar(self.right-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT, self.top+SCROLL_BAR_INTERVAL,
-            SCROLL_BAR_HEIGHT, self.height-SCROLL_BAR_INTERVAL*2-SCROLL_BAR_HEIGHT,
-            sub_obj_size=self.sub_obj.height, show_obj_size=self.height, type=SCROLL_BAR_Y, scroll=self
+        self.scrolly = ScrollBar(
+            left=self.right-SCROLL_BAR_INTERVAL-SCROLL_BAR_HEIGHT,
+            top=self.top+SCROLL_BAR_INTERVAL,
+            width=SCROLL_BAR_HEIGHT,
+            height=self.height-SCROLL_BAR_INTERVAL*2-SCROLL_BAR_HEIGHT,
+            sub_obj_size=self.sub_obj.height,
+            show_obj_size=self.height,
+            type=SCROLL_BAR_Y,
+            scroll=self
         )
 
         self.sub_objects.append(self.scrollx)

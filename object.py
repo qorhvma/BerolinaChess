@@ -21,7 +21,6 @@ class Object(pygame.rect.Rect):
             self.asb_pos_specifier(value)
             return super().__setitem__(index, value)
 
-
     def __setattr__(self, name: str, val: Any) -> Any:
         return_val = super().__setattr__(name, val)
         pos_targets = ["x", "y", "topleft", "topright", "bottom","bottomleft",
@@ -43,10 +42,13 @@ class Object(pygame.rect.Rect):
         self._asb_pos = [0, 0]
 
     def show(self, surface):
-        for obj in self.sub_objects:
-            obj.show(self.surface)
+        self.show_sub_objects(surface)
         surface.blit(self.surface, self)
         if DEBUG: pygame.draw.rect(surface, RED, self, 1)
+
+    def show_sub_objects(self, surface):
+        for obj in self.sub_objects:
+            obj.show(self.surface)
 
     def event(self, event):
         for obj in self.sub_objects:
@@ -82,7 +84,8 @@ class Button(Object):
     def is_on_me(self):
         mx, my = pygame.mouse.get_pos()
 
-        if self.x+self.asb_pos[0]<=mx<=self.x+self.asb_pos[0]+self.w and self.y+self.asb_pos[1]<=my<=self.y+self.asb_pos[1]+self.h:
+        if (self.x+self.asb_pos[0]<=mx<=self.x+self.asb_pos[0]+self.w and
+            self.y+self.asb_pos[1]<=my<=self.y+self.asb_pos[1]+self.h):
             return True
         return False
 
